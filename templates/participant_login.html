@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Participant Login — ServiceNow Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0d0f1a;
+  --surface: #141728;
+  --border: rgba(255,255,255,0.08);
+  --accent: #6c63ff;
+  --accent2: #a78bfa;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --danger: #f87171;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; animation: float 9s ease-in-out infinite; }
+.orb1 { width: 500px; height: 500px; background: #6c63ff; top: -180px; left: -180px; }
+.orb2 { width: 400px; height: 400px; background: #38bdf8; bottom: -100px; right: -100px; animation-delay: 4s; }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-25px); } }
+.card {
+  position: relative; z-index: 1;
+  width: 430px;
+  max-width: 95vw;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 44px 40px;
+  box-shadow: 0 10px 70px rgba(0,0,0,0.6);
+  animation: fadeUp .5s ease;
+}
+@keyframes fadeUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+.top-badge {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 28px;
+}
+.top-badge .icon-wrap {
+  width: 52px; height: 52px; border-radius: 15px;
+  background: linear-gradient(135deg, #6c63ff, #a78bfa);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.top-badge h1 { font-size: 20px; font-weight: 800; }
+.top-badge p { font-size: 12px; color: var(--muted); }
+.info-pill {
+  background: rgba(108,99,255,.12);
+  border: 1px solid rgba(108,99,255,.25);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--accent2);
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+label { display: block; font-size: 13px; font-weight: 500; color: var(--muted); margin-bottom: 6px; margin-top: 16px; }
+input {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-family: inherit; font-size: 14px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,99,255,.2); }
+.btn {
+  display: block; width: 100%; margin-top: 26px;
+  padding: 14px;
+  border: none; border-radius: 12px;
+  background: linear-gradient(135deg, #6c63ff, #a78bfa);
+  color: #fff; font-family: inherit; font-size: 15px; font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 22px rgba(108,99,255,.4);
+  transition: transform .15s, box-shadow .15s;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 6px 30px rgba(108,99,255,.5); }
+.error {
+  background: rgba(248,113,113,.08);
+  border: 1px solid rgba(248,113,113,.3);
+  color: var(--danger);
+  border-radius: 10px; padding: 10px 14px;
+  font-size: 13px; margin-top: 14px;
+}
+
+</style>
+</head>
+<body>
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+</div>
+<div class="card">
+  <div class="top-badge">
+    <div class="icon-wrap">📝</div>
+    <div>
+      <h1>ServiceNow Quiz</h1>
+      <p>Certification Examination Portal</p>
+    </div>
+  </div>
+  <div class="info-pill">
+    ℹ️ Participants: use your registered <strong>email address</strong> as both your <strong>User ID</strong> and <strong>Password</strong>.
+  </div>
+  <form method="POST" autocomplete="off">
+    <label for="email">Email Address (User ID)</label>
+    <input type="email" id="email" name="email" placeholder="yourname@example.com" required>
+    <label for="password">Password (same as email)</label>
+    <input type="password" id="password" name="password" placeholder="yourname@example.com" required>
+    {% if error %}
+    <div class="error">⚠️ {{ error }}</div>
+    {% endif %}
+    <button type="submit" class="btn" id="loginBtn">🚀 Proceed to Exam</button>
+  </form>
+</div>
+</body>
+</html>

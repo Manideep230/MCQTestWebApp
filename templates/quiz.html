@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz — ServiceNow Examination</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0b0d18;
+  --surface: #111422;
+  --card: #161929;
+  --border: rgba(255,255,255,0.07);
+  --accent: #6c63ff;
+  --accent2: #a78bfa;
+  --success: #34d399;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --text: #e2e8f0;
+  --muted: #64748b;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Top bar */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.tb-brand { font-size: 15px; font-weight: 700; }
+.tb-center { display: flex; align-items: center; gap: 16px; }
+.progress-info { font-size: 13px; color: var(--muted); }
+.progress-info span { color: var(--text); font-weight: 700; }
+.tb-right { display: flex; align-items: center; gap: 14px; }
+
+/* Timer */
+.timer-wrap {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 6px 14px;
+}
+.timer-label { font-size: 12px; color: var(--muted); }
+.timer-val {
+  font-size: 18px; font-weight: 800;
+  width: 28px; text-align: right;
+  transition: color .2s;
+}
+.timer-val.danger { color: var(--danger); }
+.timer-val.warning { color: var(--warning); }
+.timer-val.ok { color: var(--success); }
+
+/* Camera overlay */
+.cam-overlay {
+  position: fixed; bottom: 20px; right: 20px; z-index: 200;
+  width: 140px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  border: 2px solid rgba(248,113,113,.4);
+  box-shadow: 0 4px 20px rgba(0,0,0,.5);
+}
+.cam-overlay video { width: 100%; display: block; }
+.cam-rec-label {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(0,0,0,.7);
+  border-radius: 99px;
+  padding: 2px 8px;
+  font-size: 10px; font-weight: 700;
+  color: var(--danger);
+  display: flex; align-items: center; gap: 4px;
+}
+.cam-rec-label::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--danger); border-radius: 50%;
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.1; } }
+
+/* Progress bar */
+.progress-bar-wrap {
+  position: fixed; top: 58px; left: 0; right: 0; z-index: 99;
+  height: 4px; background: rgba(255,255,255,0.05);
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6c63ff, #a78bfa);
+  transition: width .3s ease;
+}
+
+/* Timer progress bar (per question) */
+.timer-bar-wrap {
+  height: 4px; background: rgba(255,255,255,0.05);
+  border-radius: 2px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.timer-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--success);
+  transition: width .1s linear, background .5s;
+}
+
+/* Question area */
+.quiz-wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 82px 20px 40px;
+}
+.question-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 30px;
+  margin-bottom: 16px;
+}
+.q-meta {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 18px;
+}
+.q-num {
+  background: linear-gradient(135deg, #6c63ff, #a78bfa);
+  color: #fff;
+  border-radius: 99px;
+  padding: 4px 14px;
+  font-size: 13px; font-weight: 700;
+}
+.q-section { font-size: 12px; color: var(--muted); }
+.q-text {
+  font-size: 19px; font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+.options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .options { grid-template-columns: 1fr; } }
+.option-btn {
+  padding: 14px 18px;
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px; font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all .15s;
+  display: flex; align-items: center; gap: 12px;
+}
+.option-btn:hover:not(.selected):not(.correct):not(.wrong) {
+  border-color: rgba(108,99,255,.5);
+  background: rgba(108,99,255,.08);
+  transform: translateY(-1px);
+}
+.option-btn.selected {
+  border-color: var(--accent);
+  background: rgba(108,99,255,.15);
+  color: #fff;
+}
+.option-label {
+  width: 28px; height: 28px; border-radius: 8px;
+  background: rgba(255,255,255,0.07);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  flex-shrink: 0;
+}
+.option-btn.selected .option-label {
+  background: var(--accent);
+}
+
+/* Nav controls */
+.nav {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 8px;
+}
+.nav-btn {
+  padding: 10px 22px;
+  border: none; border-radius: 10px;
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+.nav-btn:hover { transform: translateY(-1px); }
+.nav-btn.next-btn {
+  background: linear-gradient(135deg, #6c63ff, #a78bfa);
+  color: #fff; box-shadow: 0 4px 16px rgba(108,99,255,.35);
+}
+.nav-btn.skip-btn {
+  background: rgba(255,255,255,0.06);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+.submit-btn {
+  display: block; width: 100%;
+  margin-top: 20px; padding: 15px;
+  border: none; border-radius: 14px;
+  background: linear-gradient(135deg, #059669, #34d399);
+  color: #fff; font-family: inherit; font-size: 17px; font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 28px rgba(52,211,153,.3);
+  transition: transform .15s, box-shadow .15s;
+}
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 36px rgba(52,211,153,.4); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(0,0,0,.7);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s;
+}
+.modal-overlay.visible { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 36px;
+  width: 400px;
+  max-width: 90vw;
+  text-align: center;
+  transform: scale(.95);
+  transition: transform .3s;
+}
+.modal-overlay.visible .modal { transform: scale(1); }
+.modal-icon { font-size: 48px; margin-bottom: 14px; }
+.modal h2 { font-size: 20px; font-weight: 800; margin-bottom: 8px; }
+.modal p { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+.modal-actions { display: flex; gap: 12px; justify-content: center; }
+.modal-btn {
+  padding: 11px 26px; border: none; border-radius: 10px;
+  font-family: inherit; font-size: 14px; font-weight: 700;
+  cursor: pointer;
+}
+.modal-btn.confirm { background: linear-gradient(135deg, #059669, #34d399); color: #fff; }
+.modal-btn.cancel  { background: rgba(255,255,255,0.08); color: var(--text); }
+
+/* Timeout overlay */
+.timeout-flash {
+  position: fixed; inset: 0; z-index: 998;
+  background: rgba(248,113,113,.15);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.timeout-flash.show { opacity: 1; }
+</style>
+</head>
+<body>
+<!-- Anti-cheat: disable right-click, copy, paste -->
+<script>
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('copy',  e => e.preventDefault());
+  document.addEventListener('cut',   e => e.preventDefault());
+  document.addEventListener('paste', e => e.preventDefault());
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && ['c','v','x','u','s','a','p'].includes(e.key.toLowerCase())) {
+      e.preventDefault();
+    }
+    if (e.key === 'F12') e.preventDefault();
+    if (e.key === 'PrintScreen') e.preventDefault();
+  });
+</script>
+
+<!-- Topbar -->
+<div class="topbar">
+  <div class="tb-brand">⚙️ ServiceNow Quiz</div>
+  <div class="tb-center">
+    <div class="progress-info">Question <span id="currentQ">1</span> of <span id="totalQ">{{total}}</span></div>
+  </div>
+  <div class="tb-right">
+    <div class="timer-wrap">
+      <span class="timer-label">Time</span>
+      <span class="timer-val ok" id="timerVal">20</span>
+      <span class="timer-label">s</span>
+    </div>
+  </div>
+</div>
+
+<!-- Overall progress bar -->
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="overallProg" style="width:0%"></div>
+</div>
+
+<!-- Quiz Content -->
+<div class="quiz-wrap">
+  <div class="question-card" id="questionCard">
+    <div class="timer-bar-wrap">
+      <div class="timer-bar-fill" id="timerBar" style="width:100%"></div>
+    </div>
+    <div class="q-meta">
+      <div class="q-num" id="qNumBadge">Q 1</div>
+      <div class="q-section" id="qSection">ServiceNow Basics</div>
+    </div>
+    <div class="q-text" id="qText">Loading…</div>
+    <div class="options" id="optionsContainer"></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn skip-btn" id="skipBtn" onclick="skipQuestion()">Skip →</button>
+    <button class="nav-btn next-btn" id="nextBtn" onclick="nextQuestion()" disabled>Next Question →</button>
+  </div>
+</div>
+
+<!-- Submit Modal -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal">
+    <div class="modal-icon">🏁</div>
+    <h2>Submit Exam?</h2>
+    <p>You've answered all questions. Click confirm to submit your exam and see your score.</p>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeModal()">Review</button>
+      <button class="modal-btn confirm" id="confirmSubmitBtn" onclick="doSubmit()">Confirm Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Timeout flash -->
+<div class="timeout-flash" id="timeoutFlash"></div>
+
+<!-- Camera overlay -->
+<div class="cam-overlay" id="camOverlay">
+  <video id="camVideoQuiz" autoplay muted playsinline></video>
+  <div class="cam-rec-label">REC</div>
+</div>
+
+<!-- Quiz data injected by Flask (hidden from JS linter) -->
+<script type="application/json" id="quizData">
+  { "questions": {{ questions | tojson }}, "attempt_id": {{ attempt_id }}, "total": {{ total }} }
+</script>
+
+<script>
+// ── Questions data (passed from server) ──
+const _data     = JSON.parse(document.getElementById('quizData').textContent);
+const QUESTIONS = _data.questions;
+const TOTAL     = _data.total;
+const ATTEMPT_ID = _data.attempt_id;
+
+let currentPos = 0;
+let answers = {};       // pos → optionIndex
+let timerInterval = null;
+let timeLeft = 10;
+let isSubmitting = false;
+
+// ── Camera ──
+(async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    document.getElementById('camVideoQuiz').srcObject = stream;
+  } catch (e) {}
+})();
+
+// ── Render question ──
+function renderQuestion() {
+  const q = QUESTIONS[currentPos];
+  document.getElementById('currentQ').textContent = currentPos + 1;
+  document.getElementById('totalQ').textContent = TOTAL;
+  document.getElementById('qNumBadge').textContent = `Q ${currentPos + 1}`;
+
+  document.getElementById('qSection').textContent = q.section || 'ServiceNow';
+  document.getElementById('qText').textContent = q.text;
+
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  const labels = ['A', 'B', 'C', 'D'];
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.id = `opt_${idx}`;
+    if (answers[currentPos] === idx) btn.classList.add('selected');
+    btn.innerHTML = `<span class="option-label">${labels[idx]}</span>${opt}`;
+    btn.onclick = () => selectOption(idx);
+    container.appendChild(btn);
+  });
+
+  updateNextBtn();
+  updateOverallProgress();
+  startTimer();
+}
+
+function selectOption(idx) {
+  answers[currentPos] = idx;
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById(`opt_${idx}`).classList.add('selected');
+  // Save answer to server
+  fetch('/api/save-answer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pos: currentPos, choice: idx })
+  });
+  updateNextBtn();
+}
+
+function updateNextBtn() {
+  const btn = document.getElementById('nextBtn');
+  btn.disabled = !(currentPos in answers);
+}
+
+function updateOverallProgress() {
+  const pct = ((currentPos) / TOTAL) * 100;
+  document.getElementById('overallProg').style.width = pct + '%';
+}
+
+// ── Timer ──
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = 20;
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      flashTimeout();
+      setTimeout(autoAdvance, 400);
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const el = document.getElementById('timerVal');
+  el.textContent = timeLeft;
+  el.className = 'timer-val ' + (timeLeft <= 6 ? 'danger' : timeLeft <= 12 ? 'warning' : 'ok');
+  const pct = (timeLeft / 20) * 100;
+  const bar = document.getElementById('timerBar');
+  bar.style.width = pct + '%';
+  bar.style.background = timeLeft <= 6 ? '#f87171' : timeLeft <= 12 ? '#fbbf24' : '#34d399';
+}
+
+function flashTimeout() {
+  const f = document.getElementById('timeoutFlash');
+  f.classList.add('show');
+  setTimeout(() => f.classList.remove('show'), 400);
+}
+
+function autoAdvance() {
+  // If no answer selected, mark as skipped (null)
+  advance();
+}
+
+function nextQuestion() {
+  clearInterval(timerInterval);
+  advance();
+}
+
+function skipQuestion() {
+  clearInterval(timerInterval);
+  advance();
+}
+
+function advance() {
+  if (currentPos < TOTAL - 1) {
+    currentPos++;
+    renderQuestion();
+  } else {
+    // All questions done
+    clearInterval(timerInterval);
+    if (isSubmitting) return;
+    showSubmitModal();
+  }
+}
+
+// ── Submit ──
+function showSubmitModal() {
+  document.getElementById('submitModal').classList.add('visible');
+}
+
+function closeModal() {
+  document.getElementById('submitModal').classList.remove('visible');
+}
+
+function doSubmit() {
+  if (isSubmitting) return;
+  isSubmitting = true;
+  document.getElementById('confirmSubmitBtn').textContent = 'Submitting…';
+  document.getElementById('confirmSubmitBtn').disabled = true;
+  submitForm();
+}
+
+function submitForm() {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/submit';
+  document.body.appendChild(form);
+  form.submit();
+}
+
+// ── Anti-cheat: visibility change = auto-submit ──
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && !isSubmitting) {
+    isSubmitting = true;
+    // Use sendBeacon so it goes even in unload
+    navigator.sendBeacon('/api/submit-beacon', JSON.stringify({ answers }));
+    window.location.href = '/result';
+  }
+});
+
+window.addEventListener('beforeunload', (e) => {
+  if (!isSubmitting) {
+    navigator.sendBeacon('/api/submit-beacon', JSON.stringify({ answers }));
+  }
+});
+
+// ── Init ──
+renderQuestion();
+</script>
+</body>
+</html>

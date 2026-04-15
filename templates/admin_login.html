@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — ServiceNow Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0f1a;
+    --surface: #141728;
+    --border: rgba(255,255,255,0.08);
+    --accent: #6c63ff;
+    --accent2: #a78bfa;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --danger: #f87171;
+    --success: #34d399;
+    --card-radius: 20px;
+  }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .bg-orbs {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.18;
+    animation: float 8s ease-in-out infinite;
+  }
+  .orb1 { width: 500px; height: 500px; background: #6c63ff; top: -150px; right: -150px; animation-delay: 0s; }
+  .orb2 { width: 400px; height: 400px; background: #a78bfa; bottom: -100px; left: -100px; animation-delay: 3s; }
+  .orb3 { width: 300px; height: 300px; background: #38bdf8; top: 50%; left: 40%; animation-delay: 5s; }
+  @keyframes float {
+    0%,100% { transform: translateY(0) scale(1); }
+    50%      { transform: translateY(-30px) scale(1.05); }
+  }
+  .card {
+    position: relative; z-index: 1;
+    width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 44px 40px;
+    box-shadow: 0 8px 60px rgba(0,0,0,0.5);
+    animation: fadeUp .5s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .logo {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 32px;
+  }
+  .logo-icon {
+    width: 48px; height: 48px; border-radius: 14px;
+    background: linear-gradient(135deg, #6c63ff, #a78bfa);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .logo h1 { font-size: 20px; font-weight: 700; }
+  .logo span { display: block; font-size: 12px; color: var(--muted); font-weight: 400; }
+  .badge {
+    display: inline-block;
+    background: rgba(108,99,255,.15);
+    color: var(--accent2);
+    border: 1px solid rgba(108,99,255,.3);
+    border-radius: 99px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 6px;
+    margin-top: 18px;
+  }
+  input[type=text], input[type=password] {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,.2);
+  }
+  .btn {
+    display: block;
+    width: 100%;
+    margin-top: 28px;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #6c63ff, #a78bfa);
+    color: #fff;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 20px rgba(108,99,255,.4);
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(108,99,255,.5); }
+  .btn:active { transform: translateY(0); }
+  .error {
+    background: rgba(248,113,113,.1);
+    border: 1px solid rgba(248,113,113,.3);
+    color: var(--danger);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-top: 16px;
+  }
+</style>
+</head>
+<body>
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">⚙️</div>
+    <div>
+      <h1>ServiceNow Quiz</h1>
+      <span>Examination Platform</span>
+    </div>
+  </div>
+  <div class="badge">🔐 Admin Portal</div>
+  <form method="POST" autocomplete="off">
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" placeholder="admin" required>
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" placeholder="••••••••" required>
+    {% if error %}
+    <div class="error">⚠️ {{ error }}</div>
+    {% endif %}
+    <button type="submit" class="btn" id="loginBtn">Sign In to Dashboard</button>
+  </form>
+</div>
+</body>
+</html>

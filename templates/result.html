@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Result — ServiceNow Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0b0d18;
+  --surface: #111422;
+  --card: #161929;
+  --border: rgba(255,255,255,0.07);
+  --accent: #6c63ff;
+  --accent2: #a78bfa;
+  --success: #34d399;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --text: #e2e8f0;
+  --muted: #64748b;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px;
+  overflow: hidden;
+}
+.bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.12; }
+.orb1 { width: 500px; height: 500px; background: #6c63ff; top: -200px; left: -200px; }
+.orb2 { width: 400px; height: 400px; background: #34d399; bottom: -150px; right: -100px; }
+
+.result-card {
+  position: relative; z-index: 1;
+  width: 520px; max-width: 95vw;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 44px 40px;
+  text-align: center;
+  box-shadow: 0 12px 80px rgba(0,0,0,.6);
+  animation: fadeUp .5s ease;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+.result-emoji { font-size: 64px; margin-bottom: 12px; display: block; animation: pop .4s ease; }
+@keyframes pop { from { transform: scale(.5); } to { transform: scale(1); } }
+.result-title { font-size: 26px; font-weight: 800; margin-bottom: 8px; }
+.result-sub { color: var(--muted); font-size: 14px; margin-bottom: 30px; }
+
+/* Score ring */
+.score-ring-wrap { position: relative; width: 160px; height: 160px; margin: 0 auto 28px; }
+svg.ring { transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: rgba(255,255,255,0.07); stroke-width: 10; }
+.ring-fill { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1.5s ease; }
+.ring-text {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.ring-score { font-size: 32px; font-weight: 800; }
+.ring-total { font-size: 13px; color: var(--muted); }
+.dyn-score-color { color: var(--score-color); stroke: var(--score-color); }
+
+/* Grade */
+.grade-badge {
+  display: inline-block;
+  padding: 8px 28px;
+  border-radius: 99px;
+  font-size: 16px; font-weight: 800;
+  margin-bottom: 24px;
+  letter-spacing: .5px;
+}
+
+/* Stats row */
+.stats-row {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px; margin-bottom: 28px;
+}
+.stat-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 10px;
+}
+.stat-val { font-size: 20px; font-weight: 800; }
+.stat-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+.logout-btn {
+  display: block; width: 100%;
+  padding: 14px;
+  border: none; border-radius: 12px;
+  background: rgba(255,255,255,.07);
+  color: var(--text); font-family: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  outline: 1px solid var(--border);
+  transition: background .2s;
+}
+.logout-btn:hover { background: rgba(255,255,255,.1); }
+.email-tag {
+  background: rgba(108,99,255,.1);
+  border: 1px solid rgba(108,99,255,.2);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px; color: var(--accent2);
+  display: inline-block; margin-bottom: 20px;
+}
+</style>
+{% set pct = ((score / total) * 100) | round(1) %}
+{% if pct >= 70 %}{% set score_color = '#34d399' %}{% elif pct >= 40 %}{% set score_color = '#fbbf24' %}{% else %}{% set score_color = '#f87171' %}{% endif %}
+</head>
+<body style="--score-color: {{ score_color }}">
+<div class="bg-orbs">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+</div>
+
+
+<div class="result-card">
+  {% if pct >= 80 %}
+    <span class="result-emoji">🏆</span>
+    <div class="result-title">Outstanding!</div>
+  {% elif pct >= 60 %}
+    <span class="result-emoji">🎉</span>
+    <div class="result-title">Well Done!</div>
+  {% elif pct >= 40 %}
+    <span class="result-emoji">📚</span>
+    <div class="result-title">Keep Learning!</div>
+  {% else %}
+    <span class="result-emoji">💪</span>
+    <div class="result-title">Keep Practicing!</div>
+  {% endif %}
+  <div class="result-sub">ServiceNow Certification Examination — Result</div>
+
+  <div class="email-tag">{{ email }}</div>
+
+  <!-- Score Ring -->
+  <div class="score-ring-wrap">
+    <svg class="ring" width="160" height="160" viewBox="0 0 160 160">
+      <circle class="ring-bg" cx="80" cy="80" r="70"/>
+      <circle class="ring-fill dyn-score-color" id="ringFill" cx="80" cy="80" r="70"
+        data-pct="{{ pct }}"
+        stroke-dasharray="{{ (2 * 3.14159 * 70) | round(2) }}"
+        stroke-dashoffset="{{ (2 * 3.14159 * 70) | round(2) }}"
+      />
+    </svg>
+    <div class="ring-text">
+      <div class="ring-score dyn-score-color">
+        {{ score }}
+      </div>
+      <div class="ring-total">/ {{ total }}</div>
+    </div>
+  </div>
+
+  <!-- Grade badge -->
+  {% if pct >= 90 %}
+    <div class="grade-badge" style="background: rgba(52,211,153,.15); color:#34d399; border:1px solid rgba(52,211,153,.3)">Grade: A+</div>
+  {% elif pct >= 80 %}
+    <div class="grade-badge" style="background: rgba(52,211,153,.1); color:#34d399; border:1px solid rgba(52,211,153,.25)">Grade: A</div>
+  {% elif pct >= 70 %}
+    <div class="grade-badge" style="background: rgba(167,139,250,.1); color:#a78bfa; border:1px solid rgba(167,139,250,.25)">Grade: B</div>
+  {% elif pct >= 60 %}
+    <div class="grade-badge" style="background: rgba(251,191,36,.1); color:#fbbf24; border:1px solid rgba(251,191,36,.25)">Grade: C</div>
+  {% elif pct >= 40 %}
+    <div class="grade-badge" style="background: rgba(251,191,36,.08); color:#fbbf24; border:1px solid rgba(251,191,36,.2)">Grade: D</div>
+  {% else %}
+    <div class="grade-badge" style="background: rgba(248,113,113,.1); color:#f87171; border:1px solid rgba(248,113,113,.25)">Grade: F</div>
+  {% endif %}
+
+  <!-- ✅ QUALIFIED / ❌ NOT QUALIFIED banner -->
+  {% if score >= 80 %}
+  <div style="margin-bottom:22px; padding: 16px 20px; border-radius: 14px;
+              background: rgba(52,211,153,.1); border: 2px solid rgba(52,211,153,.4);
+              display:flex; align-items:center; justify-content:center; gap:10px;">
+    <span style="font-size:28px;">🎓</span>
+    <div style="text-align:left;">
+      <div style="font-size:18px; font-weight:800; color:#34d399;">✅ QUALIFIED</div>
+      <div style="font-size:12px; color:#64748b; margin-top:2px;">Congratulations! You have passed the ServiceNow Certification Exam.</div>
+    </div>
+  </div>
+  {% else %}
+  <div style="margin-bottom:22px; padding: 16px 20px; border-radius: 14px;
+              background: rgba(248,113,113,.08); border: 2px solid rgba(248,113,113,.35);
+              display:flex; align-items:center; justify-content:center; gap:10px;">
+    <span style="font-size:28px;">📋</span>
+    <div style="text-align:left;">
+      <div style="font-size:18px; font-weight:800; color:#f87171;">❌ NOT QUALIFIED</div>
+      <div style="font-size:12px; color:#64748b; margin-top:2px;">Minimum score of 80/120 required to qualify. Keep practising!</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="stat-val" style="color:#34d399">{{ score }}</div>
+      <div class="stat-lbl">Correct</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val" style="color:#f87171">{{ total - score }}</div>
+      <div class="stat-lbl">Incorrect / Skipped</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val" style="color:#a78bfa">{{ pct }}%</div>
+      <div class="stat-lbl">Score</div>
+    </div>
+  </div>
+
+  <button class="logout-btn" onclick="window.location.href='/logout'">🚪 Exit Exam Portal</button>
+</div>
+
+<script>
+// Animate score ring
+const circumference = 2 * Math.PI * 70;
+const ringEl = document.getElementById('ringFill');
+const pctVal = parseFloat(ringEl.dataset.pct);
+const offset = circumference - (pctVal / 100) * circumference;
+setTimeout(() => {
+  ringEl.style.strokeDashoffset = offset;
+}, 200);
+</script>
+</body>
+</html>

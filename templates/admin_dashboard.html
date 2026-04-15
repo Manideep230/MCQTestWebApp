@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — ServiceNow Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0b0d18;
+  --surface: #111422;
+  --card: #161929;
+  --border: rgba(255,255,255,0.07);
+  --accent: #6c63ff;
+  --accent2: #a78bfa;
+  --success: #34d399;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --text: #e2e8f0;
+  --muted: #64748b;
+}
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* Header */
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+  position: sticky; top: 0; z-index: 100;
+}
+.header-brand { display: flex; align-items: center; gap: 12px; }
+.header-icon {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: linear-gradient(135deg, #6c63ff, #a78bfa);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.header h1 { font-size: 17px; font-weight: 700; }
+.header-actions { display: flex; align-items: center; gap: 12px; }
+
+/* Main layout */
+.main { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+.page-title { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+.page-sub { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+
+/* Stat cards */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 24px;
+}
+.stat-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.stat-value { font-size: 32px; font-weight: 800; }
+.stat-value.green { color: var(--success); }
+.stat-value.purple { color: var(--accent2); }
+.stat-value.amber { color: var(--warning); }
+
+/* Grid layout */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+@media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } }
+
+/* Cards */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title { font-size: 15px; font-weight: 700; }
+.card-body { padding: 22px; }
+
+/* Exam toggle */
+.exam-status-big {
+  text-align: center;
+  padding: 28px 22px;
+}
+.status-indicator {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  transition: all .4s;
+}
+.status-indicator.active { background: rgba(52,211,153,.15); border: 3px solid var(--success); animation: pulse 2s infinite; }
+.status-indicator.inactive { background: rgba(248,113,113,.1); border: 3px solid var(--danger); }
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(52,211,153,.4); }
+  50%      { box-shadow: 0 0 0 15px rgba(52,211,153,0); }
+}
+.exam-status-text { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.exam-status-sub { color: var(--muted); font-size: 13px; margin-bottom: 22px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn-success {
+  background: linear-gradient(135deg, #059669, #34d399);
+  color: #fff; box-shadow: 0 4px 16px rgba(52,211,153,.3);
+}
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626, #f87171);
+  color: #fff; box-shadow: 0 4px 16px rgba(248,113,113,.3);
+}
+.btn-accent {
+  background: linear-gradient(135deg, #6c63ff, #a78bfa);
+  color: #fff; box-shadow: 0 4px 16px rgba(108,99,255,.3);
+}
+.btn-ghost {
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn-full { width: 100%; }
+
+/* Input */
+.input-row { display: flex; gap: 10px; }
+.input-field {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s;
+}
+.input-field:focus { border-color: var(--accent); }
+
+/* Participant list */
+.participant-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.participant-item:last-child { border-bottom: none; }
+.participant-email { font-size: 14px; font-weight: 500; }
+.participant-date { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* Scores table */
+.score-table { width: 100%; border-collapse: collapse; }
+.score-table th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.score-table td {
+  padding: 13px 12px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.score-table tr:last-child td { border-bottom: none; }
+.score-table tr:hover td { background: rgba(255,255,255,0.025); }
+.score-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.score-high { background: rgba(52,211,153,.15); color: var(--success); }
+.score-mid  { background: rgba(251,191,36,.15); color: var(--warning); }
+.score-low  { background: rgba(248,113,113,.15); color: var(--danger); }
+.rank-badge { font-weight: 800; color: var(--accent2); }
+.empty-state { text-align: center; color: var(--muted); padding: 32px; font-size: 14px; }
+.full-card { margin-bottom: 24px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-brand">
+    <div class="header-icon">⚙️</div>
+    <div>
+      <h1>ServiceNow Quiz — Admin</h1>
+    </div>
+  </div>
+  <div class="header-actions">
+    <a href="/admin/logout" class="btn btn-ghost btn-sm">🚪 Logout</a>
+  </div>
+</div>
+
+<div class="main">
+  <div class="page-title">Dashboard</div>
+  <div class="page-sub">Manage participants, control exam, and view scores.</div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Total Participants</div>
+      <div class="stat-value purple">{{ participants | length }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Submissions</div>
+      <div class="stat-value green">{{ scores | length }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Questions</div>
+      <div class="stat-value amber">{{ total_q }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Exam Status</div>
+      <div class="stat-value {% if exam_active %}green{% else %}stat-value{% endif %}">
+        {% if exam_active %}LIVE{% else %}OFF{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Exam Control -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚡ Exam Control</div>
+      </div>
+      <div class="exam-status-big">
+        <div class="status-indicator {% if exam_active %}active{% else %}inactive{% endif %}">
+          {% if exam_active %}🟢{% else %}🔴{% endif %}
+        </div>
+        <div class="exam-status-text">{% if exam_active %}Exam is LIVE{% else %}Exam is Offline{% endif %}</div>
+        <div class="exam-status-sub">
+          {% if exam_active %}Participants can now log in and take the quiz.{% else %}Participants cannot access the quiz right now.{% endif %}
+        </div>
+        <form method="POST" action="/admin/toggle-exam">
+          <button type="submit" id="toggleBtn"
+            class="btn btn-full {% if exam_active %}btn-danger{% else %}btn-success{% endif %}">
+            {% if exam_active %}⏹ Stop Exam{% else %}▶ Start Exam{% endif %}
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add Participant -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">👥 Add Participant</div>
+      </div>
+      <div class="card-body">
+        <form method="POST" action="/admin/add-participant" autocomplete="off">
+          <div class="input-row">
+            <input type="email" name="email" id="addEmail" class="input-field" placeholder="participant@example.com" required>
+            <button type="submit" class="btn btn-accent" id="addBtn">Add</button>
+          </div>
+        </form>
+        <div style="margin-top: 22px; max-height: 280px; overflow-y: auto;">
+          {% if participants %}
+            {% for p in participants %}
+            <div class="participant-item">
+              <div>
+                <div class="participant-email">{{ p.email }}</div>
+                <div class="participant-date">Added {{ p.created_at[:10] if p.created_at else '' }}</div>
+              </div>
+              <form method="POST" action="/admin/delete-participant" style="margin:0">
+                <input type="hidden" name="email" value="{{ p.email }}">
+                <button type="submit" class="btn btn-danger btn-sm" title="Remove">✕</button>
+              </form>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">No participants added yet.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scores -->
+  <div class="card full-card">
+    <div class="card-header">
+      <div class="card-title">🏆 Score Board (out of {{ total_q }})</div>
+    </div>
+    <div class="card-body" style="padding: 0;">
+      {% if scores %}
+      <div style="overflow-x: auto;">
+        <table class="score-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Participant Email</th>
+              <th>Score</th>
+              <th>Percentage</th>
+              <th>Status</th>
+              <th>Submitted At</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in scores %}
+            {% set pct = ((s.score / total_q) * 100) | round(1) %}
+            <tr>
+              <td class="rank-badge">#{{ loop.index }}</td>
+              <td>{{ s.participant_email }}</td>
+              <td>
+                <span class="score-badge {% if pct >= 70 %}score-high{% elif pct >= 40 %}score-mid{% else %}score-low{% endif %}">
+                  {{ s.score }} / {{ total_q }}
+                </span>
+              </td>
+              <td>{{ pct }}%</td>
+              <td>
+                {% if s.score >= 80 %}
+                  <span style="color:#34d399; font-weight:700; font-size:13px;">✅ Qualified</span>
+                {% else %}
+                  <span style="color:#f87171; font-weight:700; font-size:13px;">❌ Not Qualified</span>
+                {% endif %}
+              </td>
+              <td style="color: var(--muted); font-size: 13px;">{{ s.submitted_at[:19].replace('T',' ') if s.submitted_at else '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <div class="empty-state">No submissions yet. Start the exam and wait for participants.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+</body>
+</html>

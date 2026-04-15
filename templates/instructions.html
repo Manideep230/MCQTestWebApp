@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instructions — ServiceNow Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0b0d18;
+  --surface: #111422;
+  --card: #161929;
+  --border: rgba(255,255,255,0.07);
+  --accent: #6c63ff;
+  --accent2: #a78bfa;
+  --success: #34d399;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --text: #e2e8f0;
+  --muted: #64748b;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 20px;
+}
+.container { width: 100%; max-width: 760px; }
+.top-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 28px;
+}
+.top-icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: linear-gradient(135deg, #6c63ff, #a78bfa);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+}
+.top-header h1 { font-size: 26px; font-weight: 800; }
+.top-header p { color: var(--muted); font-size: 14px; margin-top: 3px; }
+
+/* Camera section */
+.cam-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 22px;
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.cam-wrap {
+  position: relative;
+  width: 160px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  aspect-ratio: 4/3;
+}
+.cam-wrap video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.rec-dot {
+  position: absolute; top: 8px; right: 8px;
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(0,0,0,.7);
+  border-radius: 99px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--danger);
+}
+.rec-dot::before {
+  content: '';
+  width: 8px; height: 8px;
+  background: var(--danger);
+  border-radius: 50%;
+  animation: blink 1s infinite;
+}
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
+.cam-info h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.cam-info p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.cam-status {
+  display: inline-block; margin-top: 10px;
+  padding: 4px 12px; border-radius: 99px;
+  font-size: 12px; font-weight: 600;
+}
+.cam-status.ok { background: rgba(52,211,153,.15); color: var(--success); }
+.cam-status.wait { background: rgba(251,191,36,.1); color: var(--warning); }
+
+/* Info blocks */
+.cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 22px; }
+@media (max-width: 600px) { .cards-grid { grid-template-columns: 1fr; } .cam-section { flex-direction: column; } }
+.info-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 20px;
+}
+.info-card-title {
+  font-size: 13px; font-weight: 700; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 7px;
+}
+.info-card ul { list-style: none; padding: 0; }
+.info-card li {
+  font-size: 13px; color: var(--muted); line-height: 1.5;
+  padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.info-card li:last-child { border-bottom: none; }
+.info-card li .dot { flex-shrink: 0; margin-top: 4px; }
+
+.do-card  .info-card-title { color: var(--success); }
+.dont-card .info-card-title { color: var(--danger); }
+.do-card  li .dot { color: var(--success); }
+.dont-card li .dot { color: var(--danger); }
+
+/* Exam info banner */
+.exam-info {
+  background: rgba(108,99,255,.08);
+  border: 1px solid rgba(108,99,255,.2);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 22px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+.ei-item { text-align: center; }
+.ei-val { font-size: 22px; font-weight: 800; color: var(--accent2); }
+.ei-label { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+/* Start button */
+.start-btn {
+  display: block; width: 100%;
+  padding: 16px;
+  border: none; border-radius: 14px;
+  background: linear-gradient(135deg, #6c63ff, #a78bfa);
+  color: #fff; font-family: inherit; font-size: 17px; font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 6px 28px rgba(108,99,255,.5);
+  transition: transform .15s, box-shadow .15s;
+  letter-spacing: .3px;
+}
+.start-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 36px rgba(108,99,255,.6); }
+.start-btn:active { transform: translateY(0); }
+.start-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.warning-note {
+  background: rgba(251,191,36,.07);
+  border: 1px solid rgba(251,191,36,.2);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px; color: var(--warning);
+  margin-bottom: 16px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top-header">
+    <div class="top-icon">📋</div>
+    <div>
+      <h1>Exam Instructions</h1>
+      <p>Please read carefully before starting the quiz.</p>
+    </div>
+  </div>
+
+  <!-- Camera Section -->
+  <div class="cam-section">
+    <div class="cam-wrap" id="camWrap">
+      <video id="camVideo" autoplay muted playsinline></video>
+      <div class="rec-dot">REC</div>
+    </div>
+    <div class="cam-info">
+      <h3>🎥 Proctoring Active</h3>
+      <p>This exam is being monitored via your webcam. Your session is being recorded. Any suspicious behaviour will result in automatic disqualification.</p>
+      <div class="cam-status wait" id="camStatusBadge">🔄 Requesting camera access…</div>
+    </div>
+  </div>
+
+  <!-- Exam meta info -->
+  <div class="exam-info">
+    <div class="ei-item">
+      <div class="ei-val">120</div>
+      <div class="ei-label">Total Questions</div>
+    </div>
+    <div class="ei-item">
+      <div class="ei-val">10s</div>
+      <div class="ei-label">Per Question</div>
+    </div>
+    <div class="ei-item">
+      <div class="ei-val">1</div>
+      <div class="ei-label">Attempt Allowed</div>
+    </div>
+    <div class="ei-item">
+      <div class="ei-val">MCQ</div>
+      <div class="ei-label">Question Type</div>
+    </div>
+  </div>
+
+  <!-- Do's and Don'ts -->
+  <div class="cards-grid">
+    <div class="info-card do-card">
+      <div class="info-card-title">✅ Do's</div>
+      <ul>
+        <li><span class="dot">✓</span> Read each question carefully</li>
+        <li><span class="dot">✓</span> Answer within 10 seconds</li>
+        <li><span class="dot">✓</span> Stay on this tab at all times</li>
+        <li><span class="dot">✓</span> Ensure stable internet connection</li>
+        <li><span class="dot">✓</span> Sit in a well-lit, quiet environment</li>
+        <li><span class="dot">✓</span> Submit before the timer runs out</li>
+      </ul>
+    </div>
+    <div class="info-card dont-card">
+      <div class="info-card-title">🚫 Don'ts</div>
+      <ul>
+        <li><span class="dot">✗</span> Do NOT copy or paste content</li>
+        <li><span class="dot">✗</span> Do NOT switch tabs or windows</li>
+        <li><span class="dot">✗</span> Do NOT refresh the page</li>
+        <li><span class="dot">✗</span> Do NOT use right-click menu</li>
+        <li><span class="dot">✗</span> Do NOT use external resources</li>
+        <li><span class="dot">✗</span> Do NOT take screenshots</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="warning-note">
+    ⚠️ <strong>Important:</strong> If you refresh or leave the page, your exam will be <strong>automatically submitted</strong> with whatever answers you have given. You will NOT be allowed to retake the exam.
+  </div>
+
+  <button class="start-btn" id="startBtn" onclick="startExam()" disabled>
+    ⏳ Initializing camera…
+  </button>
+</div>
+
+<script>
+async function initCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    document.getElementById('camVideo').srcObject = stream;
+    const badge = document.getElementById('camStatusBadge');
+    badge.textContent = '🟢 Camera Active — Session Monitored';
+    badge.className = 'cam-status ok';
+    const btn = document.getElementById('startBtn');
+    btn.disabled = false;
+    btn.textContent = '🚀 I Understand — Start Exam';
+  } catch (e) {
+    const badge = document.getElementById('camStatusBadge');
+    badge.textContent = '⚠️ Camera access required. Please allow and refresh.';
+    badge.className = 'cam-status wait';
+    // Still allow start even if camera denied
+    const btn = document.getElementById('startBtn');
+    btn.disabled = false;
+    btn.textContent = '🚀 I Understand — Start Exam';
+  }
+}
+
+function startExam() {
+  document.getElementById('startBtn').textContent = 'Loading…';
+  document.getElementById('startBtn').disabled = true;
+  window.location.href = '/quiz';
+}
+
+initCamera();
+</script>
+</body>
+</html>
