@@ -5,7 +5,7 @@ import sqlite3
 from datetime import datetime, timezone
 from functools import wraps
 from flask import (Flask, render_template, request, redirect,
-                   url_for, session, jsonify, g)
+                   url_for, session, jsonify, g, send_from_directory)
 from questions import QUESTIONS
 
 app = Flask(__name__)
@@ -62,7 +62,7 @@ def init_db():
         );
     """)
     # Seed defaults — INSERT OR REPLACE ensures password update takes effect
-    db.execute("INSERT OR REPLACE INTO admin VALUES ('admin', 'manideep')")
+    db.execute("INSERT OR REPLACE INTO admin VALUES ('admin@gmail.com', 'manideep')")
     db.execute("INSERT OR IGNORE INTO exam_status VALUES (1, 0)")
     db.commit()
     db.close()
@@ -212,7 +212,11 @@ def delete_participant():
 # Participant routes
 # ─────────────────────────────────────────────
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
+def index():
+    return send_from_directory(app.root_path, 'index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
 def participant_login():
     error = None
     if request.method == 'POST':
