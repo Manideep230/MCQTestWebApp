@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Database (contains participant data)
+quiz.db
+
+# Environment
+.env
+venv/
+.venv/
