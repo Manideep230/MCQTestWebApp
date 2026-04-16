@@ -125,7 +125,7 @@ svg.ring { transform: rotate(-90deg); }
 
 
 <div class="result-card">
-  {% if pct >= 80 %}
+  {% if pct >= 90 %}
     <span class="result-emoji">🏆</span>
     <div class="result-title">Outstanding!</div>
   {% elif pct >= 60 %}
@@ -176,7 +176,7 @@ svg.ring { transform: rotate(-90deg); }
   {% endif %}
 
   <!-- ✅ QUALIFIED / ❌ NOT QUALIFIED banner -->
-  {% if score >= 80 %}
+  {% if score >= 90 %}
   <div style="margin-bottom:22px; padding: 16px 20px; border-radius: 14px;
               background: rgba(52,211,153,.1); border: 2px solid rgba(52,211,153,.4);
               display:flex; align-items:center; justify-content:center; gap:10px;">
@@ -193,7 +193,7 @@ svg.ring { transform: rotate(-90deg); }
     <span style="font-size:28px;">📋</span>
     <div style="text-align:left;">
       <div style="font-size:18px; font-weight:800; color:#f87171;">❌ NOT QUALIFIED</div>
-      <div style="font-size:12px; color:#64748b; margin-top:2px;">Minimum score of 80/120 required to qualify. Keep practising!</div>
+      <div style="font-size:12px; color:#64748b; margin-top:2px;">Minimum score of 90/120 required to qualify. Keep practising!</div>
     </div>
   </div>
   {% endif %}
