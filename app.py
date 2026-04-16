@@ -5,7 +5,7 @@ import sqlite3
 from datetime import datetime, timezone
 from functools import wraps
 from flask import (Flask, render_template, request, redirect,
-                   url_for, session, jsonify, g, send_from_directory)
+                   url_for, session, jsonify, g)
 from questions import QUESTIONS
 
 app = Flask(__name__)
@@ -212,11 +212,7 @@ def delete_participant():
 # Participant routes
 # ─────────────────────────────────────────────
 
-@app.route('/')
-def index():
-    return send_from_directory(app.root_path, 'index.html')
-
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def participant_login():
     error = None
     if request.method == 'POST':
@@ -432,6 +428,8 @@ def api_exam_status():
 # Entry point
 # ─────────────────────────────────────────────
 
+# Initialize DB at import time (needed for gunicorn on Render)
+init_db()
+
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True, port=5000)
